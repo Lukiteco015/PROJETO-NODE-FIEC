@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-require('dotenv').config();
+const { jwtSecret } = require('../config/config')
 
 //Gerar o token JWT
 
 const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, "my-secret-key", { expiresIn: '1h' });
+    return jwt.sign({ id: userId }, jwtSecret, { expiresIn: '1h' });
 };
 
 exports.register = async (req, res) => {

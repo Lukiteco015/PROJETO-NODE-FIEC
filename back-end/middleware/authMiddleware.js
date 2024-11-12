@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken')
-require('dotenv').config()
+const { jwtSecret } = require('../config/config')
 
 const authMiddleware = (req, res, next) => {
     const token = req.header['Authorization']?.split(' ')[1];
 
     if(!token){
-        res.status(401).json({erro: "Acesso não autorizado!"})
+        res.status(401).json({erro: "Acesso negado, token ausente!"})
     }
 
     try{
-        const decoded = jwt.verify(token);
+        const decoded = jwt.verify(token, jwtSecret);
         req.user = decoded;
         next();
     }
