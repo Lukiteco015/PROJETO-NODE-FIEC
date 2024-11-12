@@ -11,8 +11,8 @@ const authMiddlewareAdmin = (req, res, next) => {
 
     try{
         const decoded = jwt.verify(token, jwtSecret);
-        req.user = decoded;
-        User.findOne({email: req.user.email}).then(user => {
+        req.userId = decoded;
+        User.findById(req.userId).then(user => {
             if(user.role == 'ADMIN') next();
             else res.status(403).json({erro: "Acesso não autorizado!"})
         })
