@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
     const { username, password, email } = req.body;
 
     try {
-        const userData = null;
+        let userData = null;
         User.findOne({email: email}).then(user => userData = user)
 
         if(userData) return res.status(409).json('Esse email já está sendo usado!')
