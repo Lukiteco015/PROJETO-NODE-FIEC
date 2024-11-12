@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const AnswerController = require('../controllers/answerController');  // Importa o controller
+const answerController = require('../controllers/answerController');  // Importa o controller
 const authMiddleware = require('../middleware/authMiddleware')
 
-router.post('/answers', authMiddleware, AnswerController.createAnswer);
+router.post('/', authMiddleware, answerController.createAnswer);
 
-router.get('/answers/:feedbackId', authMiddleware, AnswerController.getAnswersByFeedbackId);
+router.get('/:feedbackId', authMiddleware, answerController.getAnswersByFeedbackId);
 
-router.delete('/answers/:id', authMiddleware, AnswerController.deleteAnswer);
+router.delete('/:id', authMiddleware, answerController.deleteAnswer);
 
-router.put('/answers/:id', authMiddleware, AnswerController.updateAnswer);
+router.put('/:id', authMiddleware, answerController.updateAnswer);
 
 module.exports = router;

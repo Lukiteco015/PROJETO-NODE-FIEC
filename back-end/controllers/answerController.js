@@ -1,7 +1,8 @@
-const Answer = require('../models/answerMode');
+const Answer = require('../models/answerModel');
 
 // Função para criar uma nova resposta
-const createAnswer = async (req, res) => {
+
+exports.createAnswer = async (req, res) => {
     try {
         const { feedbackId, userId, answer } = req.body;
 
@@ -20,7 +21,7 @@ const createAnswer = async (req, res) => {
 };
 
 // Função para buscar todas as respostas de um feedback específico
-const getAnswersByFeedbackId = async (req, res) => {
+exports.getAnswersByFeedbackId = async (req, res) => {
     try {
         const { feedbackId } = req.params;
 
@@ -38,7 +39,7 @@ const getAnswersByFeedbackId = async (req, res) => {
 };
 
 // Função para deletar uma resposta pelo ID
-const deleteAnswer = async (req, res) => {
+exports.deleteAnswer = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -55,7 +56,7 @@ const deleteAnswer = async (req, res) => {
 };
 
 // Função para atualizar uma resposta pelo ID
-const updateAnswer = async (req, res) => {
+exports.updateAnswer = async (req, res) => {
     try {
         const { id } = req.params;
         const { answer } = req.body;
@@ -70,11 +71,4 @@ const updateAnswer = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Erro ao atualizar a resposta', error: error.message });
     }
-};
-// Exportando as funções para serem usadas nas rotas
-module.exports = {
-    createAnswer,
-    updateAnswer,
-    deleteAnswer,
-    getAnswersByFeedbackId,  
 };
