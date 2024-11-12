@@ -1,11 +1,11 @@
 const feedbackService = require('../services/feedbackService')
 
-const createFeedback = async(req, res) => {
+exports.createFeedback = async(req, res) => {
     try {
-        const { title, content, score} = req.body
+        const { title, content } = req.body
         const userId = req.userId // Obtém o userId do token JWT
 
-        const feedback = await feedbackService.createFeedback(userId, title, content, score)
+        const feedback = await feedbackService.createFeedback(userId, title, content)
 
         res.status(201).json({
             message: "Feedback criado com sucesso!",
