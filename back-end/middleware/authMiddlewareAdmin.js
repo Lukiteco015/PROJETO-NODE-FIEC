@@ -12,10 +12,10 @@ const authMiddlewareAdmin = (req, res, next) => {
     try{
         const decoded = jwt.verify(token, jwtSecret);
         req.user = decoded;
-        let user = null;
-        User.findOne({email: req.user.email}).then(userData => user = userData)
-        if(user.role == 'ADMIN') next();
-        else res.status(403).json({erro: "Acesso não autorizado!"})
+        User.findOne({email: req.user.email}).then(user => {
+            if(user.role == 'ADMIN') next();
+            else res.status(403).json({erro: "Acesso não autorizado!"})
+        })
     }
     catch(erro){
         res.status(500).json({erro: "Erro inesperado no servidor: "+erro})

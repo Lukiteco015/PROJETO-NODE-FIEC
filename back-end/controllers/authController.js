@@ -9,19 +9,18 @@ const generateToken = (userId) => {
 };
 
 exports.register = async (req, res) => {
-    const { username, password, email } = req.body;
+    const { username, password, email, role } = req.body;
 
     try {
-        let userData = null;
-        User.findOne({email: email}).then(user => userData = user)
+        User.findOne({email: email}).then(async (userData) => {
+            if(userData) return res.status(409).json('Esse email já está sendo usado!')
 
-        if(userData) return res.status(409).json('Esse email já está sendo usado!')
-
-        const user = new User({ username: username, password: password, email: email });
-
-        await user.save();
-
-        res.status(201).json({ message: "Usuário criado com sucesso: " + user });
+            const user = new User({ username: username, password: password, email: email, role: role });
+            
+            await user.save();
+            
+            res.status(201).json({ message: "Usuário criado com sucesso: " + user });        
+        })
     } catch (error) {
         res.status(500).json({ error: "Erro ao registrar usuário: " + error })
     }
