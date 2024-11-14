@@ -33,7 +33,7 @@ exports.login = async (req, res) => {
         const user = await User.findOne({ email: email });
 
         if (!user || !await user.comparePassword(password)) {
-            res.status(401).json({ error: "Usuário ou senha inválida!" });
+            return res.status(401).json({ error: "Usuário ou senha inválida!" });
         }
 
         const token = generateToken(user._id);
