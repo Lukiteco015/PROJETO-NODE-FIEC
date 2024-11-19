@@ -3,7 +3,7 @@ const app = express();
 const port = 3000;
 const authRouters = require('./routes/authRouters');
 const answerRouters = require('./routes/answerRouters');
-const feedbackRouters = require('./routes/feedbackRouters');
+const feedbackRoutes = require("./routes/feedbackRoutes");
 const userRouters = require('./routes/userRouters');
 const conexaoDB = require('./database');
 
@@ -13,9 +13,8 @@ app.use(express.json());
 app.use('/auth', authRouters);
 app.use('/users', userRouters);
 app.use('/answers', answerRouters);
-app.use('/feedbacks', feedbackRouters);
+app.use('/feedbacks', feedbackRoutes);
 
-// Middleware de tratamento de erros
 app.use((err, req, res, next) => {
     console.error(err.stack); // Log do erro para diagnóstico
     res.status(500).json({ error: 'Ocorreu um erro no servidor' });
