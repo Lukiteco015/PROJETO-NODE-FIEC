@@ -14,6 +14,19 @@ exports.get_user = async (userId) => {
 };
 
 exports.update_user = async (userId, username, email, password) => { 
+    const userEmail = await User.findOne({ email: email, _id: { $ne: userId } });
+
+    if (userEmail) {
+        throw new Error('Esse email já está cadastrado');
+    }
+
+    const bcrypt = require('bcrypt');
+
+    if (password) {
+        password = await bcrypt.hash(password, 10); // Hashear a senha com um salt de 10 rounds
+    }
+
+
     const userUpdate = await User.findByIdAndUpdate(userId, {username: username, email: email, password: password}, { new: true } );
 
     if (!userUpdate) {
@@ -34,11 +47,11 @@ exports.update_role = async (userId, role) => {
 }
 
 exports.delete_user = async (userId) => {
-    const delete_user = await User.findByIdAndDelete(userId);
+    const deletedUser = await User.findByIdAndDelete(userId);
 
-    if(!delete_user){
-        throw new Error('Usuário não encontrado para deletar');
+    if (!deletedUser) {
+        throw new Error(`Usuário com ID ${userId} não encontrado para deletar`);
     }
 
-    return true;
-}
+    return deletedUser; // Retorna o documento deletado
+};
