@@ -23,12 +23,16 @@ const feedbackSchema = new mongoose.Schema({
         type: String,
         enum: ['Pendente', 'Respondido'],
         required: true,
-        default: 'Pendente'  // O padrão será "Pendente"
+        default: 'Pendente'
     },
     score: {
         type: Number,
         default: 0
-    }
+    },
+    likedBy: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 });
 
-module.exports = mongoose.model("Feedback",feedbackSchema);
+module.exports = mongoose.model("Feedback", feedbackSchema);
