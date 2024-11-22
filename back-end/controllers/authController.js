@@ -4,8 +4,8 @@ const { jwtSecret } = require('../config/config')
 
 //Gerar o token JWT
 
-const generateToken = (userId, email) => {
-    return jwt.sign({ id: userId,  email: email }, jwtSecret, { expiresIn: '1h' });
+const generateToken = (userId, role) => {
+    return jwt.sign({ id: userId,  role: role }, jwtSecret, { expiresIn: '1h' });
 };
 
 exports.register = async (req, res) => {
