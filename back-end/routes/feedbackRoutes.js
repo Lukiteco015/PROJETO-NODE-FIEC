@@ -4,9 +4,9 @@ const feedbackController = require("../controllers/feedbackController");
 
 router.post("/create", feedbackController.createFeedback);
 
-router.get("/score", feedbackController.getFeedbacksByScore);
+router.get("/score", feedbackController.getAllFeedbacks);
 
-router.put("/edit/:id", feedbackController.editFeedback);
+router.put("/edit/:title", feedbackController.editFeedback);
 
 router.delete("/delete/:id", feedbackController.deleteFeedback);
 

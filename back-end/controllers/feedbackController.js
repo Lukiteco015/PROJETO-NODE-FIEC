@@ -1,70 +1,76 @@
-const Feedback = require('../models/feedbackModel');  // Certifique-se de que o modelo está importado corretamente
+const Feedback = require('../models/feedbackModel');
+const jwt = require('jsonwebtoken');
+const { jwtSecret } = require('../config/config');
 
-// Função para criar um novo feedback
 exports.createFeedback = async (req, res) => {
     try {
-        const { title, content, status, score } = req.body;  // Não estamos mais usando 'userId'
+        const token = req.headers.authorization?.split(' ')[1];
 
-        // Verificando se os campos obrigatórios estão presentes
+        if (!token) {
+            return res.status(401).json({ message: "Pessoa não autorizada identificada!" });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.id;
+
+        const { title, content, status = "Pendente", score = 0 } = req.body;
+
         if (!title || !content) {
             return res.status(400).json({ error: "Title e content são obrigatórios!" });
         }
 
-        // Criando um novo feedback
+        const feedbackDateTime = new Date();
+
         const newFeedback = new Feedback({
             title,
             content,
             feedbackDateTime,
             status,
-            score
+            score,
+            userId
         });
 
-        // Salvando o feedback no banco de dados
         const savedFeedback = await newFeedback.save();
 
-        // Retornando resposta com sucesso
         return res.status(200).json({
             message: "Feedback criado com sucesso!",
             feedback: savedFeedback
         });
+
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: "Erro inesperado ao cadastrar o feedback. Tente novamente!" });
     }
 };
 
-// Função para listar todos os feedbacks, ordenados por score (maior para menor)
-exports.getFeedbacksByScore = async (req, res) => {
-    try {
-        const feedbacks = await Feedback.find()
-            .sort({ score: -1 })  // Ordenando pelo score de maior para menor
-            .populate("userId", "username");
-
-        return res.status(200).json(feedbacks);
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Nenhum feedback encontrado!" });
-    }
-};
-
-// Função para editar um feedback específico
 exports.editFeedback = async (req, res) => {
     try {
-        const feedbackId = req.params.id;
-        const { title, content, score, status } = req.body;
+        const { title, content } = req.body;
+        const feedbackTitle = req.params.title;
 
-        // Atualizando o feedback com os dados fornecidos
-        const updatedFeedback = await Feedback.findByIdAndUpdate(feedbackId, {
-            title,
-            content,
-            score,
-            status
-        }, { new: true });  // Retorna o feedback atualizado
+        const token = req.headers.authorization?.split(' ')[1];
 
-        // Verificando se o feedback foi encontrado
-        if (!updatedFeedback) {
+        if (!token) {
+            return res.status(401).json({ message: "Pessoa não autorizada identificada!" });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.id;
+
+        const feedback = await Feedback.findOne({ title: feedbackTitle });
+
+        if (!feedback) {
             return res.status(404).json({ error: "Feedback não encontrado!" });
         }
+
+        if (feedback.userId.toString() !== userId) {
+            return res.status(403).json({ error: "Você não tem permissão para editar este feedback!" });
+        }
+
+        feedback.title = title || feedback.title;
+        feedback.content = content || feedback.content;
+
+        const updatedFeedback = await feedback.save();
 
         return res.status(200).json({
             message: "Feedback editado com sucesso!",
@@ -76,15 +82,12 @@ exports.editFeedback = async (req, res) => {
     }
 };
 
-// Função para excluir um feedback específico
 exports.deleteFeedback = async (req, res) => {
     try {
         const feedbackId = req.params.id;
 
-        // Deletando o feedback com o ID fornecido
         const deletedFeedback = await Feedback.findByIdAndDelete(feedbackId);
 
-        // Verificando se o feedback foi encontrado e excluído
         if (!deletedFeedback) {
             return res.status(404).json({ error: "Feedback não encontrado!" });
         }
@@ -96,46 +99,59 @@ exports.deleteFeedback = async (req, res) => {
     }
 };
 
-// Função para curtir (aumentar o score) de um feedback
 exports.likeFeedback = async (req, res) => {
     try {
         const feedbackId = req.params.id;
-        const userId = req.body.userId; // O ID do usuário que está curtindo ou descurtindo
+        const userId = req.body.userId;
 
-        // Buscando o feedback pelo ID
         const feedback = await Feedback.findById(feedbackId);
 
-        // Verificando se o feedback existe
         if (!feedback) {
             return res.status(404).json({ error: "Feedback não encontrado!" });
         }
 
-        // Verificando se o usuário já deu like
         const userHasLiked = feedback.likedBy.includes(userId);
 
         if (userHasLiked) {
-            // Se o usuário já deu like, vamos remover o like
             feedback.likedBy = feedback.likedBy.filter(id => id.toString() !== userId.toString());
-            feedback.score -= 1;  // Diminuir o score
+            feedback.score -= 1;
+            await feedback.save();
             return res.status(200).json({
                 message: "Like removido com sucesso!",
                 feedback
             });
         } else {
-            // Se o usuário não deu like, vamos adicionar o like
             feedback.likedBy.push(userId);
-            feedback.score += 1;  // Aumentar o score
+            feedback.score += 1;
+            await feedback.save();
             return res.status(200).json({
                 message: "Feedback curtido com sucesso!",
                 feedback
             });
         }
 
-        // Salvando o feedback atualizado
-        await feedback.save();
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Erro ao curtir/descurtir feedback." });
     }
 };
+
+// Função para listar todos os feedbacks, ordenados pelo score
+exports.getAllFeedbacks = async (req, res) => {
+    try {
+        const feedbacks = await Feedback.find().sort({ score: -1 });  // Ordenando por score de forma decrescente
+
+        if (!feedbacks || feedbacks.length === 0) {
+            return res.status(404).json({ error: "Nenhum feedback encontrado!" });
+        }
+
+        return res.status(200).json({
+            message: "Feedbacks recuperados com sucesso!",
+            feedbacks
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Erro ao recuperar feedbacks. Tente novamente!" });
+    }
+};
+
