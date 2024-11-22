@@ -1,3 +1,4 @@
+const cors = require('cors')
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -7,9 +8,16 @@ const feedbackRoutes = require("./routes/feedbackRoutes");
 const userRouters = require('./routes/userRouters');
 const conexaoDB = require('./database');
 
+const corsOptions = {
+    origin: "http://localhost:3001",
+    optionsSuccessStatus: 200,
+}
+
 conexaoDB();
 
+app.use(cors(corsOptions));
 app.use(express.json());
+
 app.use('/auth', authRouters);
 app.use('/users', userRouters);
 app.use('/answers', answerRouters);
