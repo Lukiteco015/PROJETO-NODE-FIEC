@@ -20,13 +20,6 @@ exports.update_user = async (userId, username, email, password) => {
         throw new Error('Esse email já está cadastrado');
     }
 
-    const bcrypt = require('bcrypt');
-
-    if (password) {
-        password = await bcrypt.hash(password, 10); // Hashear a senha com um salt de 10 rounds
-    }
-
-
     const userUpdate = await User.findByIdAndUpdate(userId, {username: username, email: email, password: password}, { new: true } );
 
     if (!userUpdate) {
