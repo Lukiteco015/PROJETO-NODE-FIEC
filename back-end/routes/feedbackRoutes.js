@@ -1,15 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const feedbackController = require("../controllers/feedbackController");
+const authMiddleware = require('../middleware/authMiddleware')
 
-router.post("/create", feedbackController.createFeedback);
+router.post("/create", authMiddleware, feedbackController.createFeedback);
 
-router.get("/score", feedbackController.getAllFeedbacks);
+router.get("/score", authMiddleware, feedbackController.getAllFeedbacks);
 
-router.put("/edit/:title", feedbackController.editFeedback);
+router.put("/edit/:title", authMiddleware, feedbackController.editFeedback);
 
-router.delete("/delete/:id", feedbackController.deleteFeedback);
+router.delete("/delete/:id", authMiddleware, feedbackController.deleteFeedback);
 
-router.patch("/like/:id/like", feedbackController.likeFeedback);
+router.patch("/like/:id/like", authMiddleware, feedbackController.likeFeedback);
 
 module.exports = router;

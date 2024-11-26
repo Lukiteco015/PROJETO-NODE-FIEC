@@ -26,10 +26,10 @@ const feedbackSchema = new mongoose.Schema({
     score: {
         type: Number,
     },
-    /*likedBy: [{
+    likedBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }]*/
+    }]
 });
 
 module.exports = mongoose.model("Feedback", feedbackSchema);
