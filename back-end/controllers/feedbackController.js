@@ -110,10 +110,13 @@ exports.likeFeedback = async (req, res) => {
             return res.status(404).json({ error: "Feedback não encontrado!" });
         }
 
-        const userHasLiked = feedback.likedBy.includes(userId);
+        // Converter userId para ObjectId
+        const userIdObj = new mongoose.Types.ObjectId(userId);
+
+        const userHasLiked = feedback.likedBy.some(id => id.equals(userIdObj)); // Verifica se o usuário já curtiu
 
         if (userHasLiked) {
-            feedback.likedBy = feedback.likedBy.filter(id => id.toString() !== userId.toString());
+            feedback.likedBy = feedback.likedBy.filter(id => !id.equals(userIdObj)); // Remove o like
             feedback.score -= 1;
             await feedback.save();
             return res.status(200).json({
@@ -121,7 +124,7 @@ exports.likeFeedback = async (req, res) => {
                 feedback
             });
         } else {
-            feedback.likedBy.push(userId);
+            feedback.likedBy.push(userIdObj); // Adiciona o like
             feedback.score += 1;
             await feedback.save();
             return res.status(200).json({
@@ -129,7 +132,6 @@ exports.likeFeedback = async (req, res) => {
                 feedback
             });
         }
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Erro ao curtir/descurtir feedback." });
