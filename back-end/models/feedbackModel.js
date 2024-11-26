@@ -17,22 +17,19 @@ const feedbackSchema = new mongoose.Schema({
     feedbackDateTime: {
         type: Date,
         required: true,
-        default: Date.now
     },
     status: {
         type: String,
         enum: ['Pendente', 'Respondido'],
         required: true,
-        default: 'Pendente'
     },
     score: {
         type: Number,
-        default: 0
     },
-    likedBy: [{
+    /*likedBy: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }]
+    }]*/
 });
 
 module.exports = mongoose.model("Feedback", feedbackSchema);
