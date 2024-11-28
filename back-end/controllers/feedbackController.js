@@ -114,14 +114,22 @@ exports.likeFeedback = async (req, res) => {
         // Converter userId para ObjectId
         const userIdObj = new mongoose.Types.ObjectId(userId);
 
+        console.log(userIdObj);
         const userHasLiked = feedback.likedBy.some(id => {
-            if(id != null)
-            id.equals(userIdObj)
+            if(id != null){
+                console.log(id);
+                console.log(id.equals(userIdObj));
+                return id.equals(userIdObj);
+            }
         }); // Verifica se o usuário já curtiu
 
 
         if (userHasLiked) {
-            feedback.likedBy = feedback.likedBy.filter(id => !id.equals(userIdObj)); // Remove o like
+            feedback.likedBy = feedback.likedBy.filter(id => {
+                if(id != null){
+                    !id.equals(userIdObj)
+                }
+            }); // Remove o like
             feedback.score -= 1;
             await feedback.save();
             return res.status(200).json({
