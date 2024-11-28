@@ -114,7 +114,10 @@ exports.likeFeedback = async (req, res) => {
         // Converter userId para ObjectId
         const userIdObj = new mongoose.Types.ObjectId(userId);
 
-        const userHasLiked = feedback.likedBy.some(id => id.equals(userIdObj)); // Verifica se o usuário já curtiu
+        const userHasLiked = feedback.likedBy.some(id => {
+            if(id != null)
+            id.equals(userIdObj)
+        }); // Verifica se o usuário já curtiu
 
 
         if (userHasLiked) {
