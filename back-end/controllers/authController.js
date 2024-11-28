@@ -9,11 +9,11 @@ const generateToken = (userId, role) => {
 };
 
 exports.register = async (req, res) => {
-    const { username, password, email, role } = req.body;
+    const { username, password, email, role="USER" } = req.body;
 
     try {
         User.findOne({email: email}).then(async (userData) => {
-            if(userData) return res.status(409).json('Esse email já está sendo usado!')
+            if(userData) return res.status(409).json({error: 'Esse email já está sendo usado!'})
 
             const user = new User({ username: username, password: password, email: email, role: role });
             
