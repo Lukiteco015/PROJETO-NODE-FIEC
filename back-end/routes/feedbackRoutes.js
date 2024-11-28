@@ -7,6 +7,8 @@ router.post("/create", authMiddleware, feedbackController.createFeedback);
 
 router.get("/score", feedbackController.getAllFeedbacks);
 
+router.get("/:id/liked", authMiddleware,feedbackController.userHasLiked);
+
 router.put("/edit/:title", authMiddleware, feedbackController.editFeedback);
 
 router.delete("/delete/:id", authMiddleware, feedbackController.deleteFeedback);

@@ -100,6 +100,35 @@ exports.deleteFeedback = async (req, res) => {
     }
 };
 
+exports.userHasLiked = async (req, res) => {
+
+    const feedbackId = req.params.id;
+    const userId = req.body.userId;
+
+    try {
+        const feedback = await Feedback.findById(feedbackId);
+
+        if (!feedback) {
+            return res.status(404).json({ error: "Feedback não encontrado!" });
+        }
+
+        // Converter userId para ObjectId
+        const userIdObj = new mongoose.Types.ObjectId(userId);
+
+        const userHasLiked = feedback.likedBy.some(id => {
+            if (id != null) {
+                console.log(id);
+                console.log(id.equals(userIdObj));
+                return id.equals(userIdObj);
+            }
+        }); // Verifica se o usuário já curtiu
+        return res.status(200).json({verify: userHasLiked});
+    } catch(erro){
+        return res.status(500).json({ error: "Erro ao verificar feedback." });
+    }
+
+}
+
 exports.likeFeedback = async (req, res) => {
     try {
         const feedbackId = req.params.id;
@@ -116,7 +145,7 @@ exports.likeFeedback = async (req, res) => {
 
         console.log(userIdObj);
         const userHasLiked = feedback.likedBy.some(id => {
-            if(id != null){
+            if (id != null) {
                 console.log(id);
                 console.log(id.equals(userIdObj));
                 return id.equals(userIdObj);
@@ -126,7 +155,7 @@ exports.likeFeedback = async (req, res) => {
 
         if (userHasLiked) {
             feedback.likedBy = feedback.likedBy.filter(id => {
-                if(id != null){
+                if (id != null) {
                     !id.equals(userIdObj)
                 }
             }); // Remove o like
