@@ -1,6 +1,7 @@
 const Feedback = require('../models/feedbackModel');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config/config');
+const mongoose = require("mongoose");
 
 exports.createFeedback = async (req, res) => {
     try {
@@ -114,6 +115,7 @@ exports.likeFeedback = async (req, res) => {
         const userIdObj = new mongoose.Types.ObjectId(userId);
 
         const userHasLiked = feedback.likedBy.some(id => id.equals(userIdObj)); // Verifica se o usuário já curtiu
+
 
         if (userHasLiked) {
             feedback.likedBy = feedback.likedBy.filter(id => !id.equals(userIdObj)); // Remove o like
