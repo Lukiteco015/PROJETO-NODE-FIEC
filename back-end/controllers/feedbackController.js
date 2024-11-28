@@ -103,7 +103,7 @@ exports.deleteFeedback = async (req, res) => {
 exports.userHasLiked = async (req, res) => {
 
     const feedbackId = req.params.id;
-    const userId = req.body.userId;
+    const userId = req.userId.id;
 
     try {
         const feedback = await Feedback.findById(feedbackId);
