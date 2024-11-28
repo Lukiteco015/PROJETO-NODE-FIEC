@@ -172,7 +172,7 @@ exports.likeFeedback = async (req, res) => {
         if (userHasLiked) {
             feedback.likedBy = feedback.likedBy.filter(id => {
                 if (id != null) {
-                    !id.equals(userIdObj)
+                    return !id.equals(userIdObj)
                 }
             }); // Remove o like
             feedback.score -= 1;
@@ -207,6 +207,25 @@ exports.getAllFeedbacks = async (req, res) => {
         return res.status(200).json({
             message: "Feedbacks recuperados com sucesso!",
             feedbacks
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Erro ao recuperar feedbacks. Tente novamente!" });
+    }
+};
+
+exports.getFeedbackId = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const feedback = await Feedback.findOne({_id: id}); 
+
+        if (!feedback) {
+            return res.status(404).json({ error: "Nenhum feedback encontrado!" });
+        }
+
+        return res.status(200).json({
+            message: "Feedback recuperado com sucesso!",
+            feedback
         });
     } catch (err) {
         console.error(err);
