@@ -1,7 +1,11 @@
 const Feedback = require('../models/feedbackModel');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config/config');
+<<<<<<< HEAD
 const User = require('../models/userModel')
+=======
+const mongoose = require("mongoose");
+>>>>>>> 1e8c247e4c5d8265d8208d96e356940425fd7b46
 
 exports.createFeedback = async (req, res) => {
     try {
@@ -115,6 +119,37 @@ exports.deleteFeedback = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+exports.userHasLiked = async (req, res) => {
+
+    const feedbackId = req.params.id;
+    const userId = req.userId.id;
+
+    try {
+        const feedback = await Feedback.findById(feedbackId);
+
+        if (!feedback) {
+            return res.status(404).json({ error: "Feedback não encontrado!" });
+        }
+
+        // Converter userId para ObjectId
+        const userIdObj = new mongoose.Types.ObjectId(userId);
+
+        const userHasLiked = feedback.likedBy.some(id => {
+            if (id != null) {
+                console.log(id);
+                console.log(id.equals(userIdObj));
+                return id.equals(userIdObj);
+            }
+        }); // Verifica se o usuário já curtiu
+        return res.status(200).json({verify: userHasLiked});
+    } catch(erro){
+        return res.status(500).json({ error: "Erro ao verificar feedback." });
+    }
+
+}
+>>>>>>> 1e8c247e4c5d8265d8208d96e356940425fd7b46
 
 exports.likeFeedback = async (req, res) => {
     try {
@@ -127,10 +162,25 @@ exports.likeFeedback = async (req, res) => {
             return res.status(404).json({ error: "Feedback não encontrado!" });
         }
 
-        const userHasLiked = feedback.likedBy.includes(userId);
+        // Converter userId para ObjectId
+        const userIdObj = new mongoose.Types.ObjectId(userId);
+
+        console.log(userIdObj);
+        const userHasLiked = feedback.likedBy.some(id => {
+            if (id != null) {
+                console.log(id);
+                console.log(id.equals(userIdObj));
+                return id.equals(userIdObj);
+            }
+        }); // Verifica se o usuário já curtiu
+
 
         if (userHasLiked) {
-            feedback.likedBy = feedback.likedBy.filter(id => id.toString() !== userId.toString());
+            feedback.likedBy = feedback.likedBy.filter(id => {
+                if (id != null) {
+                    !id.equals(userIdObj)
+                }
+            }); // Remove o like
             feedback.score -= 1;
             await feedback.save();
             return res.status(200).json({
@@ -138,7 +188,7 @@ exports.likeFeedback = async (req, res) => {
                 feedback
             });
         } else {
-            feedback.likedBy.push(userId);
+            feedback.likedBy.push(userIdObj); // Adiciona o like
             feedback.score += 1;
             await feedback.save();
             return res.status(200).json({
@@ -146,7 +196,6 @@ exports.likeFeedback = async (req, res) => {
                 feedback
             });
         }
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Erro ao curtir/descurtir feedback." });

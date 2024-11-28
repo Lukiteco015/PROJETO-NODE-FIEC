@@ -14,7 +14,7 @@ const authMiddleware = (req, res, next) => {
         next();
     }
     catch(erro){
-        res.status(500).json({erro: "Erro inesperado no servidor: "+erro})
+        res.status(403).json({erro: "Acesso não autorizado!"})
     }
 } 
 
