@@ -1,11 +1,8 @@
 const Feedback = require('../models/feedbackModel');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config/config');
-<<<<<<< HEAD
 const User = require('../models/userModel')
-=======
 const mongoose = require("mongoose");
->>>>>>> 1e8c247e4c5d8265d8208d96e356940425fd7b46
 
 exports.createFeedback = async (req, res) => {
     try {
@@ -119,8 +116,6 @@ exports.deleteFeedback = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-=======
 exports.userHasLiked = async (req, res) => {
 
     const feedbackId = req.params.id;
@@ -149,7 +144,6 @@ exports.userHasLiked = async (req, res) => {
     }
 
 }
->>>>>>> 1e8c247e4c5d8265d8208d96e356940425fd7b46
 
 exports.likeFeedback = async (req, res) => {
     try {

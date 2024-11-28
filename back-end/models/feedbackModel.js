@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema({
-<<<<<<< HEAD
     title: { type: String, required: true },
     content: { type: String, required: true },
     feedbackDateTime: { type: Date, default: Date.now },
@@ -16,37 +15,6 @@ const feedbackSchema = new mongoose.Schema({
             date: { type: Date, default: Date.now }
         }
     ]
-=======
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
-    },
-    title: {
-        type: String,
-        required: true
-    },
-    content: {
-        type: String,
-        required: true
-    },
-    feedbackDateTime: {
-        type: Date,
-        required: true,
-    },
-    status: {
-        type: String,
-        enum: ['Pendente', 'Respondido'],
-        required: true,
-    },
-    score: {
-        type: Number,
-    },
-    likedBy: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }]
->>>>>>> 1e8c247e4c5d8265d8208d96e356940425fd7b46
 });
 
 module.exports = mongoose.model('Feedback', feedbackSchema);
