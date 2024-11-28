@@ -1,6 +1,7 @@
 const Feedback = require('../models/feedbackModel');
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config/config');
+const User = require('../models/userModel')
 
 exports.createFeedback = async (req, res) => {
     try {
@@ -86,11 +87,26 @@ exports.deleteFeedback = async (req, res) => {
     try {
         const feedbackId = req.params.id;
 
-        const deletedFeedback = await Feedback.findByIdAndDelete(feedbackId);
+        const feedback = await Feedback.findById(feedbackId);
 
-        if (!deletedFeedback) {
+        if (!feedback) {
             return res.status(404).json({ error: "Feedback não encontrado!" });
         }
+
+        const token = req.headers.authorization?.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ message: "Pessoa não autorizada identificada!" });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.id;
+
+        if (feedback.userId.toString() !== userId) {
+            return res.status(403).json({ error: "Você não tem permissão para excluir este feedback!" });
+        }
+
+        await feedback.remove();
 
         return res.status(200).json({ message: "Feedback excluído com sucesso!" });
     } catch (error) {
@@ -98,6 +114,7 @@ exports.deleteFeedback = async (req, res) => {
         return res.status(500).json({ error: "Erro ao excluir feedback." });
     }
 };
+
 
 exports.likeFeedback = async (req, res) => {
     try {
@@ -136,10 +153,9 @@ exports.likeFeedback = async (req, res) => {
     }
 };
 
-// Função para listar todos os feedbacks, ordenados pelo score
 exports.getAllFeedbacks = async (req, res) => {
     try {
-        const feedbacks = await Feedback.find().sort({ score: -1 });  // Ordenando por score de forma decrescente
+        const feedbacks = await Feedback.find().sort({ score: -1 }); 
 
         if (!feedbacks || feedbacks.length === 0) {
             return res.status(404).json({ error: "Nenhum feedback encontrado!" });
@@ -152,6 +168,56 @@ exports.getAllFeedbacks = async (req, res) => {
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: "Erro ao recuperar feedbacks. Tente novamente!" });
+    }
+};
+
+exports.respondToFeedback = async (req, res) => {
+    try {
+        const feedbackId = req.params.id;
+        const { response } = req.body;
+
+        if (!response) {
+            return res.status(400).json({ error: "A resposta é obrigatória!" });
+        }
+
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: "Pessoa não autorizada identificada!" });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret);
+        const userId = decoded.id;
+
+        const feedback = await Feedback.findById(feedbackId);
+        if (!feedback) {
+            return res.status(404).json({ error: "Feedback não encontrado!" });
+        }
+
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ error: "Usuário não encontrado!" });
+        }
+
+        if (user.role !== 'ADMIN' && feedback.userId.toString() !== userId) {
+            return res.status(403).json({ error: "Você não tem permissão para responder a esse feedback!" });
+        }
+
+        feedback.responses.push({
+            userId,
+            response,
+            date: new Date()
+        });
+
+        await feedback.save();
+
+        return res.status(200).json({
+            message: "Resposta registrada com sucesso!",
+            feedback
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Erro ao registrar a resposta ao feedback." });
     }
 };
 
