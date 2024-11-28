@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware')
 
 router.post("/create", authMiddleware, feedbackController.createFeedback);
 
-router.get("/score", authMiddleware, feedbackController.getAllFeedbacks);
+router.get("/score", feedbackController.getAllFeedbacks);
 
 router.put("/edit/:title", authMiddleware, feedbackController.editFeedback);
 
