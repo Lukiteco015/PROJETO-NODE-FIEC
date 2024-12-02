@@ -3,12 +3,12 @@ const mongoose = require('mongoose')
 const AnswerSchema = new mongoose.Schema({
     feedbackId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'feedbackModel',
+        ref: 'Feedback',
         required: true,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'userModel',
+        ref: 'User',
         required: true,
     },
     answer:{
