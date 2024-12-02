@@ -7,13 +7,25 @@ const answerRouters = require('./routes/answerRouters');
 const feedbackRoutes = require("./routes/feedbackRoutes");
 const userRouters = require('./routes/userRouters');
 const conexaoDB = require('./database');
+const User = require('./models/userModel');
+const { username_adm, email_adm, password_adm } = require('./config/config.js');
 
 const corsOptions = {
     origin: "http://localhost:3001",
     optionsSuccessStatus: 200,
 }
 
-conexaoDB();
+async function criarAdm(){
+    const userEmail = await User.findOne({email: 'adm.sac@gmail.com'});
+    if(userEmail) {
+        console.log("Administrador já criado.");
+        return
+    }
+    const user = new User({username: username_adm, email: email_adm, password: password_adm, role: 'ADMIN'});
+    await user.save();
+    console.log("Adiminstrador criado com sucesso!");
+}
+
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -30,6 +42,8 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
     console.log("Servidor iniciado na url: http://localhost:3000/");
+    conexaoDB();
+    criarAdm();
 });
 
 
