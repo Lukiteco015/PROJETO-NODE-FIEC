@@ -1,5 +1,6 @@
 const cors = require('cors')
 const express = require('express');
+const path = require('path')
 const app = express();
 const port = 3000;
 const authRouters = require('./routes/authRouters');
@@ -8,7 +9,7 @@ const feedbackRoutes = require("./routes/feedbackRoutes");
 const userRouters = require('./routes/userRouters');
 const conexaoDB = require('./database');
 const User = require('./models/userModel');
-const { username_adm, email_adm, password_adm } = require('./config/config.js');
+const { username_adm, email_adm, password_adm, profile_adm } = require('./config/config.js');
 
 const corsOptions = {
     origin: "http://localhost:3001",
@@ -26,7 +27,14 @@ async function criarAdm(){
     console.log("Adiminstrador criado com sucesso!");
 }
 
+// Endpoint para retornar o administrador
+app.get('/admin', async (req, res) => {
+    const userEmail = await User.findOne({email: 'adm.sac@gmail.com'});
+    res.status(200).json({user: userEmail, imgUrl: profile_adm});
+});
 
+// Servindo a pasta de uploads como pública
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors(corsOptions));
 app.use(express.json());
 
