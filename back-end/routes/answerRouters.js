@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware')
 
 router.post('/', authMiddleware, answerController.createAnswer);
 
-router.get('/:feedbackId', authMiddleware, answerController.getAnswersByFeedbackId);
+router.get('/:feedbackId', answerController.getAnswersByFeedbackId);
 
 router.delete('/:id', authMiddleware, answerController.deleteAnswer);
 
