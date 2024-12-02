@@ -27,17 +27,16 @@ async function criarAdm(){
     console.log("Adiminstrador criado com sucesso!");
 }
 
-// Endpoint para retornar o administrador
-app.get('/admin', async (req, res) => {
-    const userEmail = await User.findOne({email: 'adm.sac@gmail.com'});
-    res.status(200).json({user: userEmail, imgUrl: profile_adm});
-});
-
 // Servindo a pasta de uploads como pública
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Endpoint para retornar o administrador
+app.get('/admin', async (req, res) => {
+    const userEmail = await User.findOne({email: 'adm.sac@gmail.com'});
+    res.status(200).json({user: userEmail, imgUrl: profile_adm});
+});
 app.use('/auth', authRouters);
 app.use('/users', userRouters);
 app.use('/answers', answerRouters);
