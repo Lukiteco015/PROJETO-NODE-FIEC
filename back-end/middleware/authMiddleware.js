@@ -5,7 +5,7 @@ const authMiddleware = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if(!token){
-        return res.status(401).json({erro: "Acesso negado, token ausente!"})
+        return res.status(401).json({error: "Acesso negado, token ausente!"})
     }
 
     try{
@@ -14,7 +14,9 @@ const authMiddleware = (req, res, next) => {
         next();
     }
     catch(erro){
-        res.status(403).json({erro: "Acesso não autorizado!"})
+        console.log(erro);
+        
+        res.status(403).json({error: "Acesso não autorizado!"})
     }
 } 
 

@@ -31,6 +31,7 @@ exports.get_user_principal = async (req, res, next) => {
 
         res.json({user: user})
     } catch (erro){
+        res.json({error: erro})
         next(erro);
     }
     
