@@ -48,7 +48,7 @@ exports.getAnswersByFeedbackId = async (req, res) => {
         const { feedbackId } = req.params;
 
         const answers = await Answer.find({ feedbackId })
-            .populate('feedbackId userId');  // Preenche as referências feedbackId e userId
+            .populate('feedbackId');  // Preenche as referências feedbackId e userId
 
         if (answers.length === 0) {  // Corrigido: verifica se o array de respostas está vazio
             return res.status(404).json({ message: 'Nenhuma resposta encontrada para este feedback' });
