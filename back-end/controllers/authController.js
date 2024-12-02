@@ -4,8 +4,8 @@ const { jwtSecret } = require('../config/config')
 
 //Gerar o token JWT
 
-const generateToken = (userId, role) => {
-    return jwt.sign({ id: userId,  role: role }, jwtSecret, { expiresIn: '1h' });
+const generateToken = (userId, role, username, email) => {
+    return jwt.sign({ id: userId,  role: role, username: username, email: email }, jwtSecret, { expiresIn: '1h' });
 };
 
 exports.register = async (req, res) => {
@@ -36,7 +36,7 @@ exports.login = async (req, res) => {
             return res.status(401).json({ error: "Usuário ou senha inválida!" });
         }
 
-        const token = generateToken(user._id, user.role);
+        const token = generateToken(user._id, user.role, user.username, user.email);
         res.json({ token, message: "Login efetuado com sucesso!" })
     } catch (error) {
         res.status(500).json({error: "Erro ao logar"+error})
