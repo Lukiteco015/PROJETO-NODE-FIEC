@@ -233,53 +233,53 @@ exports.getFeedbackId = async (req, res) => {
     }
 };
 
-exports.respondToFeedback = async (req, res) => {
-    try {
-        const feedbackId = req.params.id;
-        const { response } = req.body;
+// exports.respondToFeedback = async (req, res) => {
+//     try {
+//         const feedbackId = req.params.id;
+//         const { response } = req.body;
 
-        if (!response) {
-            return res.status(400).json({ error: "A resposta é obrigatória!" });
-        }
+//         if (!response) {
+//             return res.status(400).json({ error: "A resposta é obrigatória!" });
+//         }
 
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: "Pessoa não autorizada identificada!" });
-        }
+//         const token = req.headers.authorization?.split(' ')[1];
+//         if (!token) {
+//             return res.status(401).json({ message: "Pessoa não autorizada identificada!" });
+//         }
 
-        const decoded = jwt.verify(token, jwtSecret);
-        const userId = decoded.id;
+//         const decoded = jwt.verify(token, jwtSecret);
+//         const userId = decoded.id;
 
-        const feedback = await Feedback.findById(feedbackId);
-        if (!feedback) {
-            return res.status(404).json({ error: "Feedback não encontrado!" });
-        }
+//         const feedback = await Feedback.findById(feedbackId);
+//         if (!feedback) {
+//             return res.status(404).json({ error: "Feedback não encontrado!" });
+//         }
 
-        const user = await User.findById(userId);
+//         const user = await User.findById(userId);
         
-        if (!user) {
-            return res.status(404).json({ error: "Usuário não encontrado!" });
-        }
+//         if (!user) {
+//             return res.status(404).json({ error: "Usuário não encontrado!" });
+//         }
 
-        if (user.role !== 'ADMIN' && feedback.userId.toString() !== userId) {
-            return res.status(403).json({ error: "Você não tem permissão para responder a esse feedback!" });
-        }
+//         if (user.role !== 'ADMIN' && feedback.userId.toString() !== userId) {
+//             return res.status(403).json({ error: "Você não tem permissão para responder a esse feedback!" });
+//         }
 
-        feedback.responses.push({
-            userId,
-            response,
-            date: new Date()
-        });
+//         feedback.responses.push({
+//             userId,
+//             response,
+//             date: new Date()
+//         });
 
-        await feedback.save();
+//         await feedback.save();
 
-        return res.status(200).json({
-            message: "Resposta registrada com sucesso!",
-            feedback
-        });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Erro ao registrar a resposta ao feedback." });
-    }
-};
+//         return res.status(200).json({
+//             message: "Resposta registrada com sucesso!",
+//             feedback
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         return res.status(500).json({ error: "Erro ao registrar a resposta ao feedback." });
+//     }
+// };
 

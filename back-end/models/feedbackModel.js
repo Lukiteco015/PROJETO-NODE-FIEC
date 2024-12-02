@@ -8,13 +8,14 @@ const feedbackSchema = new mongoose.Schema({
     score: { type: Number, default: 0 },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    responses: [
-        {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-            response: { type: String, required: true },
-            date: { type: Date, default: Date.now }
-        }
-    ]
+    answers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }] // Array de IDs de respostas
+    // responses: [
+    //     {
+    //         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    //         response: { type: String, required: true },
+    //         date: { type: Date, default: Date.now }
+    //     }
+    // ]
 });
 
 module.exports = mongoose.model('Feedback', feedbackSchema);
